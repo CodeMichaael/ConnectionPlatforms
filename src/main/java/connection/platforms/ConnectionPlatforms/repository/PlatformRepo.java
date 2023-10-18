@@ -2,21 +2,21 @@ package connection.platforms.ConnectionPlatforms.repository;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.BasicUpdate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.mongodb.client.result.DeleteResult;
-import com.mongodb.client.result.UpdateResult;
 
 import connection.platforms.ConnectionPlatforms.table.PlatformTable;
 
 @Repository
 public class PlatformRepo {
 	
+	@Autowired
 	private MongoTemplate temp;
 	private Class<PlatformTable> table = PlatformTable.class;
 	
@@ -28,16 +28,23 @@ public class PlatformRepo {
 		return temp.findAll(table, collection);
 	}
 	
+	public void updateValue(String id, String value, String newValue) {
+		Query q = quickQuery(id);
+		Update update = new Update();
+		update.set(value, newValue);
+		temp.updateFirst(q, update, table);
+	}
+	
 	public void insertNewTable(PlatformTable table, String collection) {
 		temp.insert(table, collection);
 	}
 	
-	public String updateValue(String value, String collection, String id) {
-		Query q = quickQuery(id);
-		Update u = new BasicUpdate(value);
-		UpdateResult result = temp.updateFirst(q, u, collection);
+	public boolean valueExists(String field, String value) {
+		Query query = new Query(Criteria.where(field).is(value));
+		long count = temp.count(query, table);
 		
-		return "Updated "+result.getModifiedCount();
+		if (count > 0) return true;
+		else return false;
 	}
 	
 	public String deleteTable(String id, String collection) {

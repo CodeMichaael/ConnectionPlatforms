@@ -1,5 +1,7 @@
 package connection.platforms.ConnectionPlatforms.table;
 
+import java.util.UUID;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -19,6 +21,9 @@ public class PlatformTable {
 	@Field("connectionComputer")
 	private String computerkey;
 	private String user;
+	
+	@Field("admin")
+	private UUID adminKey;
 	
 	@Field("unresolvedConnections")
 	private String compId;

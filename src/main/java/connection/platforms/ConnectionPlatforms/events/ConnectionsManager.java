@@ -1,6 +1,9 @@
 package connection.platforms.ConnectionPlatforms.events;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,14 +21,25 @@ public class ConnectionsManager {
 	private PlatformRepo repo;
 	private PlatformTable table;
 	
-	@PostMapping("/connect/{connectionId}")
-	public String connectToId(@RequestParam String connectionId, @RequestBody String user, String compId) {
+	@PostMapping("/connect-to/{connectionId}")
+	public String connectToId(@RequestParam("connectionId") String connectionId, @RequestBody String id, String user, String compId) {
+		boolean result = repo.valueExists("connectionId_manager", connectionId);
 		
-		// Confidential
-		
-		return null;
+		if (result) {
+			repo.updateValue(id, "loggedIntoComputer", compId);
+			repo.updateValue(id, "connectionId", null);
+			return "Connected to "+user;
+		}
+		return "Connection ID not found.";
 	}
 	
-
+	@GetMapping("/connect-getall/")
+	public List<PlatformTable> getAll(@RequestBody String collection) {
+		return repo.getAll(collection);
 	}
+	
+	
+	// Code below
+
+}
 
